@@ -1,0 +1,94 @@
+[gd_scene load_steps=14 format=3 uid="uid://c0oiswjdi3se5"]
+
+[ext_resource type="Script" uid="uid://4o7dqgfon5vw" path="res://living_room.gd" id="1_efgsu"]
+[ext_resource type="Texture2D" uid="uid://cdhsqfmp4vkdl" path="res://assets/giftbox.png" id="2_efgsu"]
+[ext_resource type="Texture2D" uid="uid://bjfi01n5fj41a" path="res://assets/carpet.png" id="3_qxcby"]
+[ext_resource type="Texture2D" uid="uid://8m2brg0jqml5" path="res://assets/cat.png" id="4_mjt0p"]
+[ext_resource type="Texture2D" uid="uid://cssgo1oa7yiec" path="res://assets/tree.png" id="5_jm2cs"]
+[ext_resource type="Texture2D" uid="uid://v2a52ewa8oqh" path="res://assets/gift.png" id="6_amcw0"]
+[ext_resource type="Texture2D" uid="uid://d0fxy8auotj84" path="res://assets/lamp.png" id="7_sigte"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6sk78"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_parq5"]
+radius = 99.0
+height = 472.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_pd0i2"]
+radius = 107.0
+height = 280.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6utvc"]
+radius = 177.88461
+height = 478.02197
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_2uuqs"]
+radius = 136.26376
+height = 336.26373
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mogh0"]
+size = Vector2(152.74725, 154.94522)
+
+[node name="livingRoom" type="Node2D"]
+material = SubResource("ShaderMaterial_6sk78")
+script = ExtResource("1_efgsu")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(0.5, 0.5)
+
+[node name="bg" type="Sprite2D" parent="."]
+texture = ExtResource("2_efgsu")
+
+[node name="carpet" type="Sprite2D" parent="."]
+position = Vector2(-16, 423)
+texture = ExtResource("3_qxcby")
+
+[node name="Area2D" type="Area2D" parent="carpet"]
+
+[node name="carpetcollision" type="CollisionShape2D" parent="carpet/Area2D"]
+position = Vector2(-1, 0)
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_parq5")
+
+[node name="cat" type="Sprite2D" parent="."]
+position = Vector2(-16, 423)
+texture = ExtResource("4_mjt0p")
+
+[node name="Area2D" type="Area2D" parent="cat"]
+
+[node name="catcollision" type="CollisionShape2D" parent="cat/Area2D"]
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_pd0i2")
+
+[node name="tree" type="Sprite2D" parent="."]
+position = Vector2(324, -6.000001)
+scale = Vector2(1.456, 1.456)
+texture = ExtResource("5_jm2cs")
+
+[node name="Area2D" type="Area2D" parent="tree"]
+
+[node name="treecollision" type="CollisionShape2D" parent="tree/Area2D"]
+shape = SubResource("CapsuleShape2D_6utvc")
+
+[node name="gift" type="Sprite2D" parent="."]
+position = Vector2(511, 341)
+scale = Vector2(0.90999997, 0.90999997)
+texture = ExtResource("6_amcw0")
+
+[node name="Area2D" type="Area2D" parent="gift"]
+
+[node name="giftcollision" type="CollisionShape2D" parent="gift/Area2D"]
+position = Vector2(0, -17.582397)
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_2uuqs")
+
+[node name="lamp" type="Sprite2D" parent="."]
+position = Vector2(-3, -359)
+scale = Vector2(0.90999997, 0.90999997)
+texture = ExtResource("7_sigte")
+
+[node name="Area2D" type="Area2D" parent="lamp"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="lamp/Area2D"]
+position = Vector2(-0.5494573, -0.54937744)
+shape = SubResource("RectangleShape2D_mogh0")
