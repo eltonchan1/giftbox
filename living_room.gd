@@ -1,5 +1,7 @@
 extends Node2D
 
+#change dialogue and also git the gift open image, maybe simple music???
+
 var outline_material = preload("res://outline_material.tres")
 var hovered_areas = []
 var dialogue_open = false
@@ -11,12 +13,17 @@ var type_speed = 0.05
 var current_dialogue_chain = []
 var current_dialogue_index = 0
 
-# Game state variables
 var game_vars = {
 	"has_catnip": false,
+	"gave_catnip": false,
 	"has_keys": false,
-	"in_room": false
+	"gift_opened": false,
+	"outside": false
 }
+
+
+var meow = preload("res://assets/meow.wav")
+@onready var audio_player = $AudioStreamPlayer
 
 var dialogue = {
 	"carpetcol": [
@@ -25,24 +32,39 @@ var dialogue = {
 	"catcol": [
 		{"text": "A cat. \nThere's a carpet under it.", "type": "text"},
 		{"text": "Pet the cat?", "type": "choice_conditional", 
-		 "condition": "has_catnip",  # Check if player has catnip
-		 "if_true": {  # Show this if has_catnip = true
-			"choices": ["Pet", "Give catnip", "Leave"], 
+		 "condition": "gave_catnip",
+		 "if_true": {
+			"choices": ["Talk", "Pet", "Leave"], 
 			"responses": [
-				[{"text": "The cat purrs.", "type": "text"}],
 				[
-					{"text": "dayum that stuff good", "type": "text"},
-					{"text": "The cat is very happy now.", "type": "text", "set_var": {"has_catnip": false}}
+					{"text": "damn that shit gas", "type": "text", "sound": true},
+					{"text": "oh yea btw heres ur keys i had them", "type": "text", "sound": true},
+					{"text": "(...? You got your keys!)", "type": "text", "set_var": {"has_keys": true}}
 				],
-				[{"text": "The cat probably needs to rest, better not disturb it.", "type": "text"}]
+				[{"text": "purrrrrrrrrrrrrrrrrr", "type": "text", "sound": true}],
+				[{"text": "tysm man", "type": "text", "sound": true}]
 			]
 		 },
-		 "if_false": {  # Show this if has_catnip = false
-			"choices": ["Pet", "Leave"], 
-			"responses": [
-				[{"text": "The cat purrs.", "type": "text"}],
-				[{"text": "The cat probably needs to rest, better not disturb it.", "type": "text"}]
-			]
+		 "if_false": {
+			"condition": "has_catnip",
+			"if_true": {
+				"choices": ["Pet", "Give catnip", "Leave"], 
+				"responses": [
+					[{"text": "The cat purrs.", "type": "text"}],
+					[
+						{"text": "", "type": "text", "sound": true, "trigger": "catniwp"},
+						{"text": "The cat is very happy now.", "type": "text", "set_var": {"has_catnip": false, "gave_catnip": true}}
+					],
+					[{"text": "The cat probably needs to rest, better not disturb it.", "type": "text"}]
+				]
+			},
+			"if_false": {
+				"choices": ["Pet", "Leave"], 
+				"responses": [
+					[{"text": "The cat purrs.", "type": "text"}],
+					[{"text": "The cat probably needs to rest, better not disturb it.", "type": "text"}]
+				]
+			}
 		 }
 		}
 	],
@@ -51,22 +73,46 @@ var dialogue = {
 	],
 	"giftcol": [
 		{"text": "A present.", "type": "text"},
-		{"text": "Open the present?", "type": "choice", "choices": ["Yes", "No"], "responses": [
-			[
-				{"text": "You got... catnip? \n(was this supposed to be for the cat?)", "type": "text", "set_var": {"has_catnip": true}},
-			],
-			[{"text": "Might not be your present, better leave it for the recipient.", "type": "text"}]
-		]}
+		{"text": "Open the present?", "type": "choice_conditional",
+		 "condition": "gift_opened",
+		 "if_true": {
+			"choices": ["Close"],
+			"responses": [
+				[{"text": "It's empty now.", "type": "text"}]
+			]
+		 },
+		 "if_false": {
+			"choices": ["Yes", "No"],
+			"responses": [
+				[
+					{"text": "You got... catnip? \n(was this supposed to be for the cat?)", "type": "text", "set_var": {"has_catnip": true, "gift_opened": true}, "trigger": "gift_open"}
+				],
+				[{"text": "Might not be your present, better leave it for the recipient.", "type": "text"}]
+			]
+		 }
+		}
 	],
 	"lampcol": [
 		{"text": "A lamp. \nYou must be really tall to interact with this.", "type": "text"}
 	],
-	"doorsidecol": [
-		{"text": "A door to your room.", "type": "text"},
-		{"text": "Enter your room?", "type": "choice", "choices": ["Yes", "No"], "responses": [
-			[{"text": "You entered your room.", "type": "text", "set_var": {"in_room": true}}],
-			[{"text": "Maybe not the best time right now.", "type": "text"}]
-		]}
+	"doorexitcol": [
+		{"text": "The exit door.", "type": "text"},
+		{"text": "Leave?", "type": "choice_conditional",
+		 "condition": "has_keys",
+		 "if_true": {
+			"choices": ["Yes", "No"],
+			"responses": [
+				[{"text": "You left the room.", "type": "text", "set_var": {"outside": true}}],
+				[{"text": "Maybe stay a bit longer.", "type": "text"}]
+			]
+		 },
+		 "if_false": {
+			"choices": ["Try to open"],
+			"responses": [
+				[{"text": "It's locked. You need keys.", "type": "text"}]
+			]
+		 }
+		}
 	]
 }
 
@@ -74,10 +120,16 @@ var dialogue = {
 @onready var dialogue_box = $ColorRect
 @onready var choice_container = $ChoiceContainer
 
+@onready var cat_sprite = $cat
+@onready var gift_sprite = $gift
+
 func _ready():
 	dialogue_box.visible = false
 	dialogue_label.visible = false
 	choice_container.visible = false
+	
+	audio_player = AudioStreamPlayer.new()
+	add_child(audio_player)
 	
 	for child in get_children():
 		if child is Area2D:
@@ -113,8 +165,9 @@ func update_outline():
 	if hovered_areas.size() > 0:
 		var top_area = get_topmost_area()
 		var sprite_name = top_area.name.replace("col", "")
-		var sprite = get_node(sprite_name)
-		sprite.material = outline_material
+		if has_node(sprite_name):
+			var sprite = get_node(sprite_name)
+			sprite.material = outline_material
 
 func get_topmost_area():
 	var top_area = hovered_areas[0]
@@ -130,8 +183,10 @@ func get_topmost_area():
 
 func get_sprite_z(area):
 	var sprite_name = area.name.replace("col", "")
-	var sprite = get_node(sprite_name)
-	return sprite.z_index
+	if has_node(sprite_name):
+		var sprite = get_node(sprite_name)
+		return sprite.z_index
+	return 0
 
 func _on_input_event(_viewport, event, _shape_idx, area):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -139,18 +194,56 @@ func _on_input_event(_viewport, event, _shape_idx, area):
 			start_dialogue(dialogue[area.name])
 
 func start_dialogue(dialogue_chain):
-	current_dialogue_chain = dialogue_chain
+	current_dialogue_chain = process_dialogue_chain(dialogue_chain)
 	current_dialogue_index = 0
 	dialogue_open = true
 	show_current_dialogue()
 
+func process_dialogue_chain(chain):
+	var processed = []
+	for item in chain:
+		if item.type == "choice_conditional":
+			var resolved = resolve_conditional(item)
+			processed.append(resolved)
+		else:
+			processed.append(item)
+	return processed
+
+func resolve_conditional(item):
+	var condition_met = game_vars.get(item.condition, false)
+	
+	if condition_met:
+		if item.if_true.has("condition"):
+			return resolve_conditional(item.if_true)
+		else:
+			return {
+				"text": item.text,
+				"type": "choice",
+				"choices": item.if_true.choices,
+				"responses": item.if_true.responses
+			}
+	else:
+		if item.if_false.has("condition"):
+			return resolve_conditional(item.if_false)
+		else:
+			return {
+				"text": item.text,
+				"type": "choice",
+				"choices": item.if_false.choices,
+				"responses": item.if_false.responses
+			}
+
 func show_current_dialogue():
 	var dialogue_data = current_dialogue_chain[current_dialogue_index]
 	
-	# Check if this dialogue sets any variables
 	if dialogue_data.has("set_var"):
 		for key in dialogue_data.set_var.keys():
 			game_vars[key] = dialogue_data.set_var[key]
+	
+	if dialogue_data.has("trigger"):
+		trigger_event(dialogue_data.trigger)
+	
+	var play_sound = dialogue_data.get("sound", false)
 	
 	if dialogue_data.type == "text":
 		choice_container.visible = false
@@ -160,26 +253,22 @@ func show_current_dialogue():
 		current_char = 0
 		is_typing = true
 		dialogue_label.text = ""
-		type_text()
+		type_text(play_sound)
 	
 	elif dialogue_data.type == "choice":
 		dialogue_box.visible = true
 		dialogue_label.visible = true
 		dialogue_label.text = dialogue_data.text
 		show_choices(dialogue_data.choices, dialogue_data.responses)
-	
-	elif dialogue_data.type == "choice_conditional":
-		# Check the condition and show appropriate choices
-		var condition_met = game_vars.get(dialogue_data.condition, false)
-		var choice_data = dialogue_data.if_true if condition_met else dialogue_data.if_false
-		
-		dialogue_box.visible = true
-		dialogue_label.visible = true
-		dialogue_label.text = dialogue_data.text
-		show_choices(choice_data.choices, choice_data.responses)
+
+func trigger_event(event_name):
+	match event_name:
+		"catniwp":
+			cat_sprite.texture = preload("res://assets/catniwp.png")
+		"gift_open":
+			gift_sprite.texture = preload("res://assets/gift_open.png")
 
 func show_choices(choices, responses):
-	# Clear old buttons
 	for child in choice_container.get_children():
 		child.queue_free()
 	
@@ -191,7 +280,6 @@ func show_choices(choices, responses):
 		button.custom_minimum_size = Vector2(200, 100)
 		button.add_theme_font_size_override("font_size", 48)
 		
-		# Create custom style
 		var style_normal = StyleBoxFlat.new()
 		style_normal.bg_color = Color(0.0, 0.0, 0.0, 0.0)
 		
@@ -233,10 +321,16 @@ func close_dialogue():
 	dialogue_label.text = ""
 	dialogue_open = false
 
-func type_text():
+func type_text(play_sound = false):
 	while current_char < full_text.length() and is_typing:
 		dialogue_label.text += full_text[current_char]
 		current_char += 1
+		
+		if play_sound and meow and current_char % 2 == 0:
+			audio_player.stream = meow
+			audio_player.pitch_scale = randf_range(0.9, 1.1)
+			audio_player.play()
+		
 		await get_tree().create_timer(type_speed).timeout
 	
 	is_typing = false
