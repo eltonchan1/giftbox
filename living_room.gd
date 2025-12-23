@@ -1,6 +1,6 @@
 extends Node2D
 
-#change dialogue and also git the gift open image, maybe simple music???
+#maybe simple music???
 
 var outline_material = preload("res://outline_material.tres")
 var hovered_areas = []
@@ -52,7 +52,7 @@ var dialogue = {
 					[
 						{"text": "damn that shit gas", "type": "text", "sound": true, "trigger": "catniwp"},
 						{"text": "oh yea btw heres ur keys i had them", "type": "text", "sound": true},
-						{"text": "(...? You got your keys!)", "type": "text", "set_var": {"has_catnip": false, "gave_catnip": true, "has_keys": true, "got_keys_from_cat": true}}
+						{"text": "...? You got your keys!", "type": "text", "set_var": {"has_catnip": false, "gave_catnip": true, "has_keys": true, "got_keys_from_cat": true}}
 					],
 					[{"text": "The cat probably needs to rest, better not disturb it.", "type": "text"}]
 				]
@@ -126,11 +126,13 @@ var dialogue = {
 
 @onready var cat_sprite = $cat
 @onready var gift_sprite = $gift
+@onready var speaker_sprite = $catspeak
 
 func _ready():
 	dialogue_box.visible = false
 	dialogue_label.visible = false
 	choice_container.visible = false
+	speaker_sprite.visible = false
 	
 	audio_player = AudioStreamPlayer.new()
 	add_child(audio_player)
@@ -249,6 +251,13 @@ func show_current_dialogue():
 	
 	var play_sound = dialogue_data.get("sound", false)
 	
+	# Show speaker sprite if sound is enabled (indicates character talking)
+	if play_sound:
+		speaker_sprite.visible = true
+		speaker_sprite.texture = preload("res://assets/catniwp2.png")
+	else:
+		speaker_sprite.visible = false
+	
 	if dialogue_data.type == "text":
 		choice_container.visible = false
 		dialogue_box.visible = true
@@ -322,6 +331,7 @@ func close_dialogue():
 	dialogue_box.visible = false
 	dialogue_label.visible = false
 	choice_container.visible = false
+	speaker_sprite.visible = false
 	dialogue_label.text = ""
 	dialogue_open = false
 

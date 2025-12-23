@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://c0oiswjdi3se5"]
+[gd_scene load_steps=19 format=3 uid="uid://c0oiswjdi3se5"]
 
 [ext_resource type="Script" uid="uid://4o7dqgfon5vw" path="res://living_room.gd" id="1_efgsu"]
 [ext_resource type="Texture2D" uid="uid://cdhsqfmp4vkdl" path="res://assets/giftbox.png" id="2_efgsu"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://d0fxy8auotj84" path="res://assets/lamp.png" id="7_sigte"]
 [ext_resource type="Texture2D" uid="uid://bgbhtwiq50rh8" path="res://assets/doorside.png" id="8_mjt0p"]
 [ext_resource type="Texture2D" uid="uid://f1svhu2d0r1k" path="res://assets/doorexit.png" id="9_jm2cs"]
+[ext_resource type="Texture2D" uid="uid://bd3fg71rb8oyp" path="res://assets/catniwp2.png" id="10_amcw0"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6sk78"]
 
@@ -124,7 +125,6 @@ position = Vector2(-720.5, 230)
 shape = SubResource("RectangleShape2D_sigte")
 
 [node name="ColorRect" type="ColorRect" parent="."]
-visible = false
 z_index = 3
 offset_left = -918.0
 offset_top = 238.0
@@ -133,7 +133,6 @@ offset_bottom = 507.0
 color = Color(1, 0.91764706, 0.70980394, 1)
 
 [node name="dialogue" type="Label" parent="."]
-visible = false
 z_index = 4
 offset_left = -905.0
 offset_top = 241.0
@@ -162,3 +161,8 @@ position = Vector2(-281.5, 117)
 shape = SubResource("RectangleShape2D_6sk78")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+
+[node name="catspeak" type="Sprite2D" parent="."]
+z_index = 4
+position = Vector2(761, 372)
+texture = ExtResource("10_amcw0")
