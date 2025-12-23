@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://burfjdgqg4jfw"
-path="res://.godot/imported/catniwp.png-836316776f87af7dd9b69b88a22c6610.ctex"
+uid="uid://qe7e7aj6bdaq"
+path="res://.godot/imported/giftopen.png-49dd2a3f5bc119292098a4a7db89157b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/catniwp.png"
-dest_files=["res://.godot/imported/catniwp.png-836316776f87af7dd9b69b88a22c6610.ctex"]
+source_file="res://assets/giftopen.png"
+dest_files=["res://.godot/imported/giftopen.png-49dd2a3f5bc119292098a4a7db89157b.ctex"]
 
 [params]
 

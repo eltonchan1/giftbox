@@ -8,7 +8,7 @@ var dialogue_open = false
 var is_typing = false
 var full_text = ""
 var current_char = 0
-var type_speed = 0.05
+var type_speed = 0.02
 
 var current_dialogue_chain = []
 var current_dialogue_index = 0
@@ -18,7 +18,8 @@ var game_vars = {
 	"gave_catnip": false,
 	"has_keys": false,
 	"gift_opened": false,
-	"outside": false
+	"outside": false,
+	"got_keys_from_cat": false
 }
 
 
@@ -29,31 +30,29 @@ var dialogue = {
 	"carpetcol": [
 		{"text": "A carpet. \nThere's a cat on it.", "type": "text"},
 	],
-	"catcol": [
+		"catcol": [
 		{"text": "A cat. \nThere's a carpet under it.", "type": "text"},
 		{"text": "Pet the cat?", "type": "choice_conditional", 
 		 "condition": "gave_catnip",
 		 "if_true": {
-			"choices": ["Talk", "Pet", "Leave"], 
+			"choices": ["Pet", "Leave"], 
 			"responses": [
-				[
-					{"text": "damn that shit gas", "type": "text", "sound": true},
-					{"text": "oh yea btw heres ur keys i had them", "type": "text", "sound": true},
-					{"text": "(...? You got your keys!)", "type": "text", "set_var": {"has_keys": true}}
-				],
 				[{"text": "purrrrrrrrrrrrrrrrrr", "type": "text", "sound": true}],
-				[{"text": "tysm man", "type": "text", "sound": true}]
+				[{"text": "The cat looks really high...", "type": "text"}]
 			]
 		 },
 		 "if_false": {
+			"text": "Pet the cat?",
+			"type": "choice_conditional",
 			"condition": "has_catnip",
 			"if_true": {
 				"choices": ["Pet", "Give catnip", "Leave"], 
 				"responses": [
 					[{"text": "The cat purrs.", "type": "text"}],
 					[
-						{"text": "", "type": "text", "sound": true, "trigger": "catniwp"},
-						{"text": "The cat is very happy now.", "type": "text", "set_var": {"has_catnip": false, "gave_catnip": true}}
+						{"text": "damn that shit gas", "type": "text", "sound": true, "trigger": "catniwp"},
+						{"text": "oh yea btw heres ur keys i had them", "type": "text", "sound": true},
+						{"text": "(...? You got your keys!)", "type": "text", "set_var": {"has_catnip": false, "gave_catnip": true, "has_keys": true, "got_keys_from_cat": true}}
 					],
 					[{"text": "The cat probably needs to rest, better not disturb it.", "type": "text"}]
 				]
@@ -76,9 +75,10 @@ var dialogue = {
 		{"text": "Open the present?", "type": "choice_conditional",
 		 "condition": "gift_opened",
 		 "if_true": {
-			"choices": ["Close"],
+			"choices": ["Yes", "No"],
 			"responses": [
-				[{"text": "It's empty now.", "type": "text"}]
+				[{"text": "You couldn't open the gift while it was open, so you closed it and opened it.", "type": "text"}, {"text": "It was empty. \nOf course.", "type": "text"}],
+				[{"text": "Is it even possible to open a present after you've opened it?", "type": "text"}]
 			]
 		 },
 		 "if_false": {
@@ -96,23 +96,27 @@ var dialogue = {
 		{"text": "A lamp. \nYou must be really tall to interact with this.", "type": "text"}
 	],
 	"doorexitcol": [
-		{"text": "The exit door.", "type": "text"},
-		{"text": "Leave?", "type": "choice_conditional",
+		{"text": "The door to go outside.", "type": "text"},
+		{"text": "Go outside?", "type": "choice_conditional",
 		 "condition": "has_keys",
 		 "if_true": {
 			"choices": ["Yes", "No"],
 			"responses": [
-				[{"text": "You left the room.", "type": "text", "set_var": {"outside": true}}],
+				[{"text": "You went outside.", "type": "text", "set_var": {"outside": true}}],
 				[{"text": "Maybe stay a bit longer.", "type": "text"}]
 			]
 		 },
 		 "if_false": {
-			"choices": ["Try to open"],
+			"choices": ["Yes", "No"],
 			"responses": [
-				[{"text": "It's locked. You need keys.", "type": "text"}]
+				[{"text": "It's locked. You need keys.", "type": "text"}],
+				[{"text": "Maybe stay a bit longer.", "type": "text"}]
 			]
 		 }
 		}
+	],
+	"doorsidecol": [
+		{"text": "yea i didnt have the time to make and code a whole other room sorry :heavysob: \n-the person who made this house (definitely not elslie)", "type": "text"}
 	]
 }
 
@@ -266,7 +270,7 @@ func trigger_event(event_name):
 		"catniwp":
 			cat_sprite.texture = preload("res://assets/catniwp.png")
 		"gift_open":
-			gift_sprite.texture = preload("res://assets/gift_open.png")
+			gift_sprite.texture = preload("res://assets/giftopen.png")
 
 func show_choices(choices, responses):
 	for child in choice_container.get_children():
@@ -328,7 +332,7 @@ func type_text(play_sound = false):
 		
 		if play_sound and meow and current_char % 2 == 0:
 			audio_player.stream = meow
-			audio_player.pitch_scale = randf_range(0.9, 1.1)
+			audio_player.pitch_scale = randf_range(0.95, 1.05)
 			audio_player.play()
 		
 		await get_tree().create_timer(type_speed).timeout
