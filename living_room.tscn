@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://c0oiswjdi3se5"]
+[gd_scene load_steps=26 format=3 uid="uid://c0oiswjdi3se5"]
 
 [ext_resource type="Script" uid="uid://4o7dqgfon5vw" path="res://living_room.gd" id="1_efgsu"]
 [ext_resource type="Texture2D" uid="uid://cdhsqfmp4vkdl" path="res://assets/giftbox.png" id="2_efgsu"]
@@ -10,6 +10,10 @@
 [ext_resource type="Texture2D" uid="uid://bgbhtwiq50rh8" path="res://assets/doorside.png" id="8_mjt0p"]
 [ext_resource type="Texture2D" uid="uid://f1svhu2d0r1k" path="res://assets/doorexit.png" id="9_jm2cs"]
 [ext_resource type="Texture2D" uid="uid://bd3fg71rb8oyp" path="res://assets/catniwp2.png" id="10_amcw0"]
+[ext_resource type="Texture2D" uid="uid://b6vwa44ssrp37" path="res://assets/stickynote.png" id="10_pd0i2"]
+[ext_resource type="Texture2D" uid="uid://bi3yljdws51v" path="res://assets/giftboxoutsideempty.png" id="11_parq5"]
+[ext_resource type="Texture2D" uid="uid://cruxiixmd3iko" path="res://assets/snowman.png" id="12_pd0i2"]
+[ext_resource type="Texture2D" uid="uid://cnb6itlt4c1gh" path="res://assets/pingu.png" id="13_6utvc"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6sk78"]
 
@@ -34,97 +38,159 @@ size = Vector2(226.99997, 472)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6sk78"]
 size = Vector2(215, 318)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6utvc"]
+size = Vector2(105, 105)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2uuqs"]
+size = Vector2(523, 583)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_j7inc"]
+size = Vector2(300, 306)
+
 [node name="livingRoom" type="Node2D"]
 material = SubResource("ShaderMaterial_6sk78")
 script = ExtResource("1_efgsu")
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Indoor" type="Node2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="Indoor"]
 zoom = Vector2(0.6, 0.6)
 
-[node name="bg" type="Sprite2D" parent="."]
+[node name="bg" type="Sprite2D" parent="Indoor"]
 texture = ExtResource("2_efgsu")
 
-[node name="carpet" type="Sprite2D" parent="."]
+[node name="carpet" type="Sprite2D" parent="Indoor"]
 position = Vector2(-16, 423)
 texture = ExtResource("3_qxcby")
 
-[node name="carpetcol" type="Area2D" parent="."]
+[node name="carpetcol" type="Area2D" parent="Indoor"]
 z_index = 1
 position = Vector2(-16, 423)
 
-[node name="carpetcollision" type="CollisionShape2D" parent="carpetcol"]
+[node name="carpetcollision" type="CollisionShape2D" parent="Indoor/carpetcol"]
 position = Vector2(0, 3)
 rotation = 1.5707964
 shape = SubResource("RectangleShape2D_qxcby")
 
-[node name="cat" type="Sprite2D" parent="."]
+[node name="cat" type="Sprite2D" parent="Indoor"]
 z_index = 2
 position = Vector2(-16, 423)
 texture = ExtResource("4_mjt0p")
 
-[node name="catcol" type="Area2D" parent="."]
+[node name="catcol" type="Area2D" parent="Indoor"]
 position = Vector2(-16, 423)
 
-[node name="catcollision" type="CollisionShape2D" parent="catcol"]
+[node name="catcollision" type="CollisionShape2D" parent="Indoor/catcol"]
 position = Vector2(-0.5, 0.5)
 rotation = 1.5707964
 shape = SubResource("RectangleShape2D_mjt0p")
 
-[node name="tree" type="Sprite2D" parent="."]
+[node name="tree" type="Sprite2D" parent="Indoor"]
 z_index = 1
 position = Vector2(324, -6.000001)
 scale = Vector2(1.456, 1.456)
 texture = ExtResource("5_jm2cs")
 
-[node name="treecol" type="Area2D" parent="."]
+[node name="treecol" type="Area2D" parent="Indoor"]
 position = Vector2(324, -6.000001)
 scale = Vector2(1.456, 1.456)
 
-[node name="treecollision" type="CollisionShape2D" parent="treecol"]
+[node name="treecollision" type="CollisionShape2D" parent="Indoor/treecol"]
 position = Vector2(4.4642944, -3.77743)
 scale = Vector2(0.9999999, 0.9999999)
 shape = SubResource("RectangleShape2D_jm2cs")
 
-[node name="gift" type="Sprite2D" parent="."]
+[node name="gift" type="Sprite2D" parent="Indoor"]
 z_index = 2
 position = Vector2(511, 341)
 scale = Vector2(0.90999997, 0.90999997)
 texture = ExtResource("6_amcw0")
 
-[node name="giftcol" type="Area2D" parent="."]
+[node name="giftcol" type="Area2D" parent="Indoor"]
 position = Vector2(511, 341)
 scale = Vector2(0.90999997, 0.90999997)
 
-[node name="giftcollision" type="CollisionShape2D" parent="giftcol"]
+[node name="giftcollision" type="CollisionShape2D" parent="Indoor/giftcol"]
 position = Vector2(0.5494385, -16.483429)
 rotation = 1.5707964
 shape = SubResource("RectangleShape2D_amcw0")
 
-[node name="lamp" type="Sprite2D" parent="."]
+[node name="lamp" type="Sprite2D" parent="Indoor"]
 z_index = 1
 position = Vector2(-3, -359)
 scale = Vector2(0.90999997, 0.90999997)
 texture = ExtResource("7_sigte")
 
-[node name="lampcol" type="Area2D" parent="."]
+[node name="lampcol" type="Area2D" parent="Indoor"]
 position = Vector2(-3, -359)
 scale = Vector2(0.90999997, 0.90999997)
 
-[node name="lampcollision" type="CollisionShape2D" parent="lampcol"]
+[node name="lampcollision" type="CollisionShape2D" parent="Indoor/lampcol"]
 position = Vector2(-0.5494573, -0.54937744)
 shape = SubResource("RectangleShape2D_mogh0")
 
-[node name="doorside" type="Sprite2D" parent="."]
+[node name="doorside" type="Sprite2D" parent="Indoor"]
 position = Vector2(-727, 231)
 texture = ExtResource("8_mjt0p")
 
-[node name="doorsidecol" type="Area2D" parent="."]
+[node name="doorsidecol" type="Area2D" parent="Indoor"]
 
-[node name="doorsidecollision" type="CollisionShape2D" parent="doorsidecol"]
+[node name="doorsidecollision" type="CollisionShape2D" parent="Indoor/doorsidecol"]
 position = Vector2(-720.5, 230)
 shape = SubResource("RectangleShape2D_sigte")
 
+[node name="doorexit" type="Sprite2D" parent="Indoor"]
+position = Vector2(-281, 116)
+texture = ExtResource("9_jm2cs")
+
+[node name="doorexitcol" type="Area2D" parent="Indoor"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Indoor/doorexitcol"]
+position = Vector2(-281.5, 117)
+shape = SubResource("RectangleShape2D_6sk78")
+
+[node name="stickynote" type="Sprite2D" parent="Indoor"]
+position = Vector2(-530.00006, 79)
+scale = Vector2(0.4804878, 0.4804878)
+texture = ExtResource("10_pd0i2")
+
+[node name="stickynotecol" type="Area2D" parent="Indoor"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Indoor/stickynotecol"]
+position = Vector2(-530.5, 79.5)
+shape = SubResource("RectangleShape2D_6utvc")
+
+[node name="Outdoor" type="Node2D" parent="."]
+visible = false
+
+[node name="bgoutside" type="Sprite2D" parent="Outdoor"]
+texture = ExtResource("11_parq5")
+
+[node name="snowman" type="Sprite2D" parent="Outdoor"]
+z_index = 1
+position = Vector2(769.00006, -19)
+scale = Vector2(1.238, 1.238)
+texture = ExtResource("12_pd0i2")
+
+[node name="snowmancol" type="Area2D" parent="Outdoor"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Outdoor/snowmancol"]
+position = Vector2(775.5, -17.5)
+shape = SubResource("RectangleShape2D_2uuqs")
+
+[node name="pingu" type="Sprite2D" parent="Outdoor"]
+z_index = 2
+position = Vector2(561, 126)
+texture = ExtResource("13_6utvc")
+
+[node name="pingucol" type="Area2D" parent="Outdoor"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Outdoor/pingucol"]
+position = Vector2(557, 125)
+shape = SubResource("RectangleShape2D_j7inc")
+
 [node name="ColorRect" type="ColorRect" parent="."]
+visible = false
 z_index = 3
 offset_left = -918.0
 offset_top = 238.0
@@ -133,6 +199,7 @@ offset_bottom = 507.0
 color = Color(1, 0.91764706, 0.70980394, 1)
 
 [node name="dialogue" type="Label" parent="."]
+visible = false
 z_index = 4
 offset_left = -905.0
 offset_top = 241.0
@@ -150,19 +217,10 @@ offset_right = 906.0
 offset_bottom = 474.0
 theme_override_constants/separation = 20
 
-[node name="doorexit" type="Sprite2D" parent="."]
-position = Vector2(-281, 116)
-texture = ExtResource("9_jm2cs")
-
-[node name="doorexitcol" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="doorexitcol"]
-position = Vector2(-281.5, 117)
-shape = SubResource("RectangleShape2D_6sk78")
-
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 
 [node name="catspeak" type="Sprite2D" parent="."]
+visible = false
 z_index = 4
 position = Vector2(761, 372)
 texture = ExtResource("10_amcw0")

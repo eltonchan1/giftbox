@@ -26,6 +26,9 @@ var game_vars = {
 var meow = preload("res://assets/meow.wav")
 @onready var audio_player = $AudioStreamPlayer
 
+@onready var indoor_node = $Indoor
+@onready var outdoor_node = $Outdoor
+
 var dialogue = {
 	"carpetcol": [
 		{"text": "A carpet. \nThere's a cat on it.", "type": "text"},
@@ -97,7 +100,7 @@ var dialogue = {
 	],
 	"doorexitcol": [
 		{"text": "The door to go outside.", "type": "text"},
-		{"text": "Go outside?", "type": "choice_conditional",
+		{"text": "Go outside? \nYou won't be able to go back out.", "type": "choice_conditional",
 		 "condition": "has_keys",
 		 "if_true": {
 			"choices": ["Yes", "No"],
@@ -117,6 +120,12 @@ var dialogue = {
 	],
 	"doorsidecol": [
 		{"text": "yea i didnt have the time to make and code a whole other room sorry :heavysob: \n-the person who made this house (definitely not elslie)", "type": "text"}
+	],
+	"snowmancol": [
+		{"text": "A snowman. \nLooks kinda familiar for some reason...", "type": "text"}
+	],
+	"stickynotecol": [
+		{"text": "hey ash!!!! left a surprise outside for u... :) \n-elslie", "type": "text"}
 	]
 }
 
@@ -124,8 +133,8 @@ var dialogue = {
 @onready var dialogue_box = $ColorRect
 @onready var choice_container = $ChoiceContainer
 
-@onready var cat_sprite = $cat
-@onready var gift_sprite = $gift
+@onready var cat_sprite = $Indoor/cat
+@onready var gift_sprite = $Indoor/gift
 @onready var speaker_sprite = $catspeak
 
 func _ready():
@@ -133,15 +142,18 @@ func _ready():
 	dialogue_label.visible = false
 	choice_container.visible = false
 	speaker_sprite.visible = false
+	outdoor_node.visible = false
 	
 	audio_player = AudioStreamPlayer.new()
 	add_child(audio_player)
 	
-	for child in get_children():
-		if child is Area2D:
-			child.mouse_entered.connect(_on_mouse_entered.bind(child))
-			child.mouse_exited.connect(_on_mouse_exited.bind(child))
-			child.input_event.connect(_on_input_event.bind(child))
+	for container in [indoor_node, outdoor_node]:
+		for child in container.get_children():
+			if child is Area2D:
+				child.input_pickable = true
+				child.mouse_entered.connect(_on_mouse_entered.bind(child))
+				child.mouse_exited.connect(_on_mouse_exited.bind(child))
+				child.input_event.connect(_on_input_event.bind(child))
 
 func _input(event):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -164,16 +176,19 @@ func _on_mouse_exited(area):
 	update_outline()
 
 func update_outline():
-	for child in get_children():
-		if child is Sprite2D:
-			child.material = null
+	for container in [indoor_node, outdoor_node]:
+		for child in container.get_children():
+			if child is Sprite2D:
+				child.material = null
 	
 	if hovered_areas.size() > 0:
 		var top_area = get_topmost_area()
 		var sprite_name = top_area.name.replace("col", "")
-		if has_node(sprite_name):
-			var sprite = get_node(sprite_name)
-			sprite.material = outline_material
+		for container in [indoor_node, outdoor_node]:
+			if container.has_node(sprite_name):
+				var sprite = container.get_node(sprite_name)
+				sprite.material = outline_material
+				break
 
 func get_topmost_area():
 	var top_area = hovered_areas[0]
@@ -189,15 +204,21 @@ func get_topmost_area():
 
 func get_sprite_z(area):
 	var sprite_name = area.name.replace("col", "")
-	if has_node(sprite_name):
-		var sprite = get_node(sprite_name)
-		return sprite.z_index
+	for container in [indoor_node, outdoor_node]:
+		if container.has_node(sprite_name):
+			var sprite = container.get_node(sprite_name)
+			return sprite.z_index
 	return 0
 
 func _on_input_event(_viewport, event, _shape_idx, area):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		if not dialogue_open and area == get_topmost_area():
+		if area.name == "pingucol":
+			audio_player.stream = preload("res://assets/nootnoot.wav")
+			audio_player.play()
+			return
+		if not dialogue_open and area == get_topmost_area() and dialogue.has(area.name):
 			start_dialogue(dialogue[area.name])
+
 
 func start_dialogue(dialogue_chain):
 	current_dialogue_chain = process_dialogue_chain(dialogue_chain)
@@ -245,6 +266,7 @@ func show_current_dialogue():
 	if dialogue_data.has("set_var"):
 		for key in dialogue_data.set_var.keys():
 			game_vars[key] = dialogue_data.set_var[key]
+		check_location()
 	
 	if dialogue_data.has("trigger"):
 		trigger_event(dialogue_data.trigger)
@@ -334,6 +356,14 @@ func close_dialogue():
 	speaker_sprite.visible = false
 	dialogue_label.text = ""
 	dialogue_open = false
+
+func check_location():
+	if game_vars["outside"]:
+		indoor_node.visible = false
+		outdoor_node.visible = true
+	else:
+		indoor_node.visible = true
+		outdoor_node.visible = false
 
 func type_text(play_sound = false):
 	while current_char < full_text.length() and is_typing:
