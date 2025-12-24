@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://c0oiswjdi3se5"]
+[gd_scene load_steps=28 format=3 uid="uid://c0oiswjdi3se5"]
 
 [ext_resource type="Script" uid="uid://4o7dqgfon5vw" path="res://living_room.gd" id="1_efgsu"]
 [ext_resource type="Texture2D" uid="uid://cdhsqfmp4vkdl" path="res://assets/giftbox.png" id="2_efgsu"]
@@ -14,6 +14,8 @@
 [ext_resource type="Texture2D" uid="uid://bi3yljdws51v" path="res://assets/giftboxoutsideempty.png" id="11_parq5"]
 [ext_resource type="Texture2D" uid="uid://cruxiixmd3iko" path="res://assets/snowman.png" id="12_pd0i2"]
 [ext_resource type="Texture2D" uid="uid://cnb6itlt4c1gh" path="res://assets/pingu.png" id="13_6utvc"]
+[ext_resource type="AudioStream" uid="uid://bs17uhud642ef" path="res://assets/Home.mp3" id="15_2uuqs"]
+[ext_resource type="AudioStream" uid="uid://cwi22hy6tuwre" path="res://assets/Snowdin Town.mp3" id="16_mogh0"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6sk78"]
 
@@ -224,3 +226,11 @@ visible = false
 z_index = 4
 position = Vector2(761, 372)
 texture = ExtResource("10_amcw0")
+
+[node name="Home" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("15_2uuqs")
+autoplay = true
+
+[node name="SnowdinTown" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("16_mogh0")
+autoplay = true

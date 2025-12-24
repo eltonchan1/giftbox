@@ -29,6 +29,9 @@ var meow = preload("res://assets/meow.wav")
 @onready var indoor_node = $Indoor
 @onready var outdoor_node = $Outdoor
 
+@onready var music_inside = $Home
+@onready var music_outside = $SnowdinTown
+
 var dialogue = {
 	"carpetcol": [
 		{"text": "A carpet. \nThere's a cat on it.", "type": "text"},
@@ -143,6 +146,7 @@ func _ready():
 	choice_container.visible = false
 	speaker_sprite.visible = false
 	outdoor_node.visible = false
+	music_outside.stop()
 	
 	audio_player = AudioStreamPlayer.new()
 	add_child(audio_player)
@@ -361,9 +365,13 @@ func check_location():
 	if game_vars["outside"]:
 		indoor_node.visible = false
 		outdoor_node.visible = true
+		music_inside.stop()
+		music_outside.play()
 	else:
 		indoor_node.visible = true
 		outdoor_node.visible = false
+		music_outside.stop()
+		music_inside.play()
 
 func type_text(play_sound = false):
 	while current_char < full_text.length() and is_typing:
