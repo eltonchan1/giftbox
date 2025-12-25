@@ -1,7 +1,5 @@
 extends Node2D
 
-#maybe simple music???
-
 var outline_material = preload("res://outline_material.tres")
 var hovered_areas = []
 var dialogue_open = false
@@ -52,7 +50,7 @@ var dialogue = {
 			"type": "choice_conditional",
 			"condition": "has_catnip",
 			"if_true": {
-				"choices": ["Give catnip", "Leave"], 
+				"choices": ["Pet", "Give catnip", "Leave"], 
 				"responses": [
 					[{"text": "The cat purrs.", "type": "text"}],
 					[
@@ -267,17 +265,20 @@ func resolve_conditional(item):
 func show_current_dialogue():
 	var dialogue_data = current_dialogue_chain[current_dialogue_index]
 	
+	var location_changed = false
 	if dialogue_data.has("set_var"):
+		var old_outside = game_vars["outside"]
 		for key in dialogue_data.set_var.keys():
 			game_vars[key] = dialogue_data.set_var[key]
-		check_location()
+		if old_outside != game_vars["outside"]:
+			location_changed = true
+			check_location()
 	
 	if dialogue_data.has("trigger"):
 		trigger_event(dialogue_data.trigger)
 	
 	var play_sound = dialogue_data.get("sound", false)
 	
-	# Show speaker sprite if sound is enabled (indicates character talking)
 	if play_sound:
 		speaker_sprite.visible = true
 		speaker_sprite.texture = preload("res://assets/catniwp2.png")
