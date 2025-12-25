@@ -52,7 +52,7 @@ var dialogue = {
 			"type": "choice_conditional",
 			"condition": "has_catnip",
 			"if_true": {
-				"choices": ["Pet", "Give catnip", "Leave"], 
+				"choices": ["Give catnip", "Leave"], 
 				"responses": [
 					[{"text": "The cat purrs.", "type": "text"}],
 					[
